@@ -49,6 +49,7 @@ public interface ApiService {
     Call<ResponseBody> login(
             @Field("username") String username,
             @Field("password") String password,
+            @Field("tenant_id") int tenantId,
             @Field("mobile") String mobile
     );
 }

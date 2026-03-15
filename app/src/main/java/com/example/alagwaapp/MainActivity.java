@@ -104,6 +104,11 @@ public class MainActivity extends AppCompatActivity {
                             .header("Accept", "application/json");
                     if (cookies != null) builder.header("Cookie", cookies);
                     
+                    String token = prefs.getString("token", "");
+                    if (!token.isEmpty()) {
+                        builder.header("Authorization", "Bearer " + token);
+                    }
+                    
                     okhttp3.HttpUrl originalHttpUrl = chain.request().url();
                     okhttp3.HttpUrl newUrl = originalHttpUrl.newBuilder()
                             .addQueryParameter("tenant_id", String.valueOf(prefs.getInt("tenantId", 1)))
@@ -246,6 +251,11 @@ public class MainActivity extends AppCompatActivity {
                             .header("User-Agent", userAgent)
                             .header("Accept", "application/json");
                     if (cookies != null) builder.header("Cookie", cookies);
+
+                    String token = prefs.getString("token", "");
+                    if (!token.isEmpty()) {
+                        builder.header("Authorization", "Bearer " + token);
+                    }
                     
                     okhttp3.HttpUrl originalHttpUrl = chain.request().url();
                     okhttp3.HttpUrl newUrl = originalHttpUrl.newBuilder()

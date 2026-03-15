@@ -176,8 +176,9 @@ public class LoginActivity extends AppCompatActivity {
                 .build();
 
         ApiService apiService = retrofit.create(ApiService.class);
+        int currentTenantId = AppConfig.TENANT_ID;
 
-        apiService.login(username, password, "true").enqueue(new Callback<ResponseBody>() {
+        apiService.login(username, password, currentTenantId, "true").enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 try {
@@ -201,6 +202,7 @@ public class LoginActivity extends AppCompatActivity {
                         editor.putString("email", json.optString("email"));
                         editor.putString("role", role);
                         editor.putString("fullname", json.optString("fullname"));
+                        editor.putString("token", json.optString("token")); // NEW: Save JWT Token
                         editor.apply();
 
                         startActivity(new Intent(LoginActivity.this, MainActivity.class));
