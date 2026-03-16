@@ -23,7 +23,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.google.gson.GsonBuilder;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
+import androidx.appcompat.app.AlertDialog;
+import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -149,6 +153,11 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
+        performLogin(username, password, AppConfig.TENANT_ID);
+    }
+
+    private void performLogin(String username, String password, int tenantId) {
+
         // Show elegant loading screen during auth
         loadingOverlay.setVisibility(View.VISIBLE);
         loadingOverlay.setAlpha(1.0f);
@@ -164,7 +173,12 @@ public class LoginActivity extends AppCompatActivity {
                     Request.Builder builder = chain.request().newBuilder()
                             .header("User-Agent", userAgent)
                             .header("Accept", "application/json");
-                    if (cookies != null) builder.header("Cookie", cookies);
+                    if (cookies != null && !cookies.isEmpty()) {
+                        builder.header("Cookie", cookies);
+                        Log.d("AlagwaApp", "Sending Cookies: " + cookies);
+                    } else {
+                        Log.e("AlagwaApp", "No Cookies Found for request!");
+                    }
                     return chain.proceed(builder.build());
                 })
                 .build();
@@ -176,9 +190,9 @@ public class LoginActivity extends AppCompatActivity {
                 .build();
 
         ApiService apiService = retrofit.create(ApiService.class);
-        int currentTenantId = AppConfig.TENANT_ID;
 
-        apiService.login(username, password, currentTenantId, "true").enqueue(new Callback<ResponseBody>() {
+
+        apiService.login(username, password, tenantId, "true").enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 try {
@@ -186,6 +200,13 @@ public class LoginActivity extends AppCompatActivity {
                     Log.d("AlagwaApp", "Login Response: " + rawJson);
                     
                     JSONObject json = new JSONObject(rawJson);
+                    
+                    // CHECK FOR MULTIPLE ACCOUNTS
+                    if (json.optString("status").equals("multiple_accounts")) {
+                        showClinicSelectionDialog(username, password, json.getJSONArray("accounts"));
+                        return;
+                    }
+
                     if (json.optBoolean("success")) {
                         String role = json.optString("role");
                         
@@ -223,6 +244,35 @@ public class LoginActivity extends AppCompatActivity {
                 btnLogin.setEnabled(true);
             }
         });
+    }
+
+    private void showClinicSelectionDialog(String username, String password, JSONArray accounts) throws Exception {
+        loadingOverlay.setVisibility(View.GONE);
+        if (progressAnimator != null) progressAnimator.cancel();
+
+        List<String> clinicNames = new ArrayList<>();
+        final List<Integer> tenantIds = new ArrayList<>();
+
+        for (int i = 0; i < accounts.length(); i++) {
+            JSONObject acc = accounts.getJSONObject(i);
+            clinicNames.add(acc.optString("clinic_name"));
+            tenantIds.add(acc.optInt("tenant_id"));
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+        builder.setTitle("Select your Clinic");
+        builder.setItems(clinicNames.toArray(new String[0]), (dialog, which) -> {
+            int selectedTenantId = tenantIds.get(which);
+            AppConfig.TENANT_ID = selectedTenantId; // Update global config
+            Log.d("AlagwaApp", "Selected Clinic Tenant ID: " + selectedTenantId);
+            performLogin(username, password, selectedTenantId); // Force exact ID
+        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> {
+            btnLogin.setEnabled(true);
+            dialog.dismiss();
+        });
+        builder.setCancelable(false);
+        builder.show();
     }
 
     private void showError(String msg) {
