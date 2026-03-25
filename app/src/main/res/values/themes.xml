@@ -6,4 +6,10 @@
     </style>
 
     <style name="Theme.AlagwaApp" parent="Base.Theme.AlagwaApp" />
+
+    <style name="TransparentDialog" parent="Theme.Material3.Light.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
 </resources>

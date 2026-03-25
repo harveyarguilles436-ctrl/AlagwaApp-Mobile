@@ -1,6 +1,6 @@
 package com.example.alagwaapp;
 
-import okhttp3.ResponseBody; // Added this import for ResponseBody
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
@@ -9,7 +9,7 @@ import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 
 public interface ApiService {
-    @GET("api_billing.php") // The specific PHP file on your server
+    @GET("api_billing.php")
     Call<SummaryResponse> getSummary(
             @Query("action") String action,
             @Query("mobile") String mobile,
@@ -31,6 +31,32 @@ public interface ApiService {
 
     @GET("api_patients.php")
     Call<ResponseBody> getPatientsRaw(@Query("action") String action, @Query("mobile") String mobile);
+
+    @GET("api_bookings.php")
+    Call<AppointmentResponse> getAppointments(
+            @Query("action") String action,
+            @Query("mobile") String mobile,
+            @Query("email") String email
+    );
+
+    @POST("api_bookings.php")
+    @FormUrlEncoded
+    Call<ResponseBody> createAppointment(
+            @Query("action") String action,
+            @Query("mobile") String mobile,
+            @Field("patient_id") int patientId,
+            @Field("booking_date") String date,
+            @Field("booking_time") String time,
+            @Field("service_type") String serviceType,
+            @Field("notes") String notes
+    );
+
+    @GET("api_bookings.php")
+    Call<ResponseBody> getAvailableSlots(
+            @Query("action") String action,
+            @Query("mobile") String mobile,
+            @Query("date") String date
+    );
 
     @GET("api_bookings.php")
     Call<ResponseBody> getBookingsRaw(@Query("action") String action, @Query("mobile") String mobile);

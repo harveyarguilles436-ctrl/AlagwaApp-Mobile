@@ -1,381 +1,312 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/mainRoot"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8FAFC">
+    tools:context=".MainActivity">
 
-    <!-- Scrollable Content -->
-    <ScrollView
+    <RelativeLayout
+        android:id="@+id/mainRoot"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/bottomNavContainer"
-        android:fillViewport="true">
-        
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingBottom="40dp">
+        android:background="@color/background">
 
-            <!-- Dynamic Header Background Frame -->
-            <FrameLayout
-                android:id="@+id/headerFrame"
+        <!-- Pinterest Header -->
+        <RelativeLayout
+            android:id="@+id/luminousHeader"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:paddingHorizontal="24dp"
+            android:layout_alignParentTop="true">
+            
+            <RelativeLayout android:layout_width="wrap_content" android:layout_height="match_parent">
+                <!-- Profile Ring -->
+                <RelativeLayout
+                    android:id="@+id/profilePicContainer"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/bg_white_circle"
+                    android:stateListAnimator="@animator/press_3d"
+                    android:padding="4dp">
+                    
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:cardCornerRadius="24dp"
+                        app:cardElevation="0dp">
+                        <ImageView
+                            android:id="@+id/ivUserProfile"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:src="@android:drawable/ic_menu_gallery" />
+                    </androidx.cardview.widget.CardView>
+                </RelativeLayout>
+
+                <!-- Texts -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/profilePicContainer"
+                    android:layout_marginStart="16dp"
+                    android:layout_centerVertical="true"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Good Day,"
+                        android:textColor="@color/on_surface_variant"
+                        android:textSize="14sp"
+                        android:fontFamily="sans-serif" />
+                    <TextView
+                        android:id="@+id/tvWelcomeName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="patient"
+                        android:textColor="@color/on_surface"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        android:fontFamily="sans-serif-black" />
+                </LinearLayout>
+            </RelativeLayout>
+
+            <!-- Hamburger Menu Button -->
+            <ImageView
+                android:id="@+id/ivMenu"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:padding="10dp"
+                android:background="@drawable/bg_white_circle"
+                android:stateListAnimator="@animator/press_3d"
+                android:src="@android:drawable/ic_menu_sort_by_size"
+                app:tint="@color/on_surface" />
+        </RelativeLayout>
+
+        <!-- Main Scroll -->
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/luminousHeader"
+            android:layout_above="@+id/bottomNavContainer"
+            android:clipToPadding="false"
+            android:paddingBottom="40dp"
+            android:scrollbars="none">
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#6366F1"> 
-                
-                <LinearLayout
+                android:orientation="vertical"
+                android:paddingTop="16dp">
+
+                <!-- Stats Horizontal Scroll -->
+                <HorizontalScrollView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:paddingTop="32dp"
-                    android:paddingBottom="48dp"
-                    android:paddingHorizontal="24dp">
+                    android:paddingHorizontal="24dp"
+                    android:paddingBottom="16dp"
+                    android:clipToPadding="false"
+                    android:scrollbars="none">
                     
+                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal">
+                        
+                        <!-- Mocha primary pill -->
+                        <RelativeLayout 
+                            android:layout_width="150dp" 
+                            android:layout_height="160dp" 
+                            android:background="@drawable/bg_mocha_3d_pill" 
+                            android:stateListAnimator="@animator/press_3d"
+                            android:padding="24dp">
+                            <ImageView android:layout_width="28dp" android:layout_height="28dp" android:src="@android:drawable/ic_menu_today" app:tint="@color/white" />
+                            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:layout_alignParentBottom="true">
+                                <TextView android:id="@+id/tvStatValue1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="02" android:textColor="@color/white" android:textSize="38sp" android:fontFamily="sans-serif-black" />
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Appointments\nToday" android:textColor="#EAE1D8" android:textSize="12sp" android:layout_marginTop="4dp" />
+                            </LinearLayout>
+                        </RelativeLayout>
+
+                        <View android:layout_width="16dp" android:layout_height="match_parent" />
+
+                        <!-- Beige secondary pill -->
+                        <RelativeLayout 
+                            android:layout_width="150dp" 
+                            android:layout_height="160dp" 
+                            android:background="@drawable/bg_white_3d_pill" 
+                            android:stateListAnimator="@animator/press_3d"
+                            android:padding="24dp">
+                            <ImageView android:layout_width="28dp" android:layout_height="28dp" android:src="@android:drawable/ic_menu_recent_history" app:tint="@color/primary" />
+                            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:layout_alignParentBottom="true">
+                                <TextView android:id="@+id/tvStatValue2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="05" android:textColor="@color/on_surface" android:textSize="38sp" android:fontFamily="sans-serif-black" />
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Upcoming" android:textColor="@color/on_surface_variant" android:textSize="12sp" android:layout_marginTop="4dp" />
+                            </LinearLayout>
+                        </RelativeLayout>
+
+                        <View android:layout_width="16dp" android:layout_height="match_parent" />
+
+                        <!-- Beige secondary pill 2 -->
+                        <RelativeLayout 
+                            android:layout_width="150dp" 
+                            android:layout_height="160dp" 
+                            android:background="@drawable/bg_white_3d_pill" 
+                            android:stateListAnimator="@animator/press_3d"
+                            android:padding="24dp">
+                            <ImageView android:layout_width="28dp" android:layout_height="28dp" android:src="@android:drawable/ic_menu_save" app:tint="@color/error" />
+                            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:layout_alignParentBottom="true">
+                                <TextView android:id="@+id/tvStatValue3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="01" android:textColor="@color/on_surface" android:textSize="38sp" android:fontFamily="sans-serif-black" />
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Pending Bills" android:textColor="@color/on_surface_variant" android:textSize="12sp" android:layout_marginTop="4dp" />
+                            </LinearLayout>
+                        </RelativeLayout>
+                    </LinearLayout>
+                </HorizontalScrollView>
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingHorizontal="24dp">
+                    
+                    <!-- Journey Section -->
+                    <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="32dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Pregnancy Journey" android:textColor="@color/on_surface" android:textSize="20sp" android:textStyle="bold" />
+                        <TextView android:id="@+id/tvPregnancyStatus" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="Trimester 2" android:textColor="@color/primary" android:textStyle="bold" android:textSize="14sp" />
+                    </RelativeLayout>
+                    
+                    <androidx.cardview.widget.CardView 
+                        android:layout_width="match_parent" 
+                        android:layout_height="wrap_content" 
+                        android:layout_marginTop="16dp" 
+                        app:cardBackgroundColor="@color/surface"
+                        app:cardCornerRadius="24dp"
+                        app:cardElevation="0dp">
+                        <RelativeLayout 
+                            android:layout_width="match_parent" 
+                            android:layout_height="wrap_content" 
+                            android:background="@drawable/bg_white_3d_pill"
+                            android:padding="24dp">
+                            <!-- Track -->
+                            <View android:layout_width="match_parent" android:layout_height="12dp" android:background="@drawable/timeline_progress_mocha" />
+                            <!-- Fill -->
+                            <View android:id="@+id/viewTimelineProgress" android:layout_width="160dp" android:layout_height="12dp" android:background="@drawable/bg_mocha_3d_pill" />
+                            
+                            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginTop="32dp">
+                                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+                                    <View android:layout_width="12dp" android:layout_height="12dp" android:background="@drawable/bg_mocha_circle" />
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="Wk 12" android:textColor="@color/on_surface" android:textSize="12sp" android:textStyle="bold" />
+                                </LinearLayout>
+                                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+                                    <View android:layout_width="12dp" android:layout_height="12dp" android:background="@drawable/bg_mocha_circle" />
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="Wk 20" android:textColor="@color/on_surface" android:textSize="12sp" android:textStyle="bold" />
+                                </LinearLayout>
+                                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:alpha="0.4">
+                                    <View android:layout_width="12dp" android:layout_height="12dp" android:background="@drawable/bg_white_circle" />
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="Wk 28" android:textColor="@color/on_surface_variant" android:textSize="12sp" />
+                                </LinearLayout>
+                                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:alpha="0.4">
+                                    <View android:layout_width="12dp" android:layout_height="12dp" android:background="@drawable/bg_white_circle" />
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="Wk 36" android:textColor="@color/on_surface_variant" android:textSize="12sp" />
+                                </LinearLayout>
+                            </LinearLayout>
+                        </RelativeLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Bento Grid -->
+                    <GridLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="24dp" android:columnCount="2" android:alignmentMode="alignMargins" android:columnOrderPreserved="false" android:useDefaultMargins="true">
+                        
+                        <RelativeLayout android:layout_width="0dp" android:layout_height="120dp" android:layout_columnWeight="1" android:background="@drawable/bg_white_3d_pill" android:padding="16dp" android:stateListAnimator="@animator/press_3d" android:layout_marginEnd="8dp">
+                                <ImageView android:layout_width="32dp" android:layout_height="32dp" android:padding="6dp" android:background="@drawable/bg_white_circle" android:src="@android:drawable/ic_dialog_info" app:tint="@color/primary" />
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentBottom="true" android:layout_marginBottom="24dp" android:text="CURRENT STATUS" android:textColor="@color/on_surface_variant" android:textSize="10sp" android:fontFamily="sans-serif-medium" />
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentBottom="true" android:text="Healthy" android:textColor="@color/on_surface" android:textSize="16sp" android:textStyle="bold" />
+                        </RelativeLayout>
+
+                        <RelativeLayout android:layout_width="0dp" android:layout_height="120dp" android:layout_columnWeight="1" android:background="@drawable/bg_white_3d_pill" android:padding="16dp" android:stateListAnimator="@animator/press_3d" android:layout_marginStart="8dp">
+                                <ImageView android:layout_width="32dp" android:layout_height="32dp" android:padding="6dp" android:background="@drawable/bg_white_circle" android:src="@android:drawable/ic_menu_recent_history" app:tint="@color/primary" />
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentBottom="true" android:layout_marginBottom="24dp" android:text="DAYS TO GO" android:textColor="@color/on_surface_variant" android:textSize="10sp" android:fontFamily="sans-serif-medium" />
+                                <TextView android:id="@+id/tvBabySize" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentBottom="true" android:text="124 Days" android:textColor="@color/on_surface" android:textSize="16sp" android:textStyle="bold" />
+                        </RelativeLayout>
+
+                        <RelativeLayout android:layout_width="0dp" android:layout_height="120dp" android:layout_columnWeight="1" android:layout_marginTop="16dp" android:background="@drawable/bg_white_3d_pill" android:padding="16dp" android:stateListAnimator="@animator/press_3d" android:layout_marginEnd="8dp">
+                                <ImageView android:layout_width="32dp" android:layout_height="32dp" android:padding="6dp" android:background="@drawable/bg_white_circle" android:src="@android:drawable/ic_menu_sort_by_size" app:tint="@color/primary" />
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentBottom="true" android:layout_marginBottom="24dp" android:text="MOVEMENT" android:textColor="@color/on_surface_variant" android:textSize="10sp" android:fontFamily="sans-serif-medium" />
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentBottom="true" android:text="Active" android:textColor="@color/on_surface" android:textSize="16sp" android:textStyle="bold" />
+                        </RelativeLayout>
+
+                        <RelativeLayout android:layout_width="0dp" android:layout_height="120dp" android:layout_columnWeight="1" android:layout_marginTop="16dp" android:background="@drawable/bg_white_3d_pill" android:padding="16dp" android:stateListAnimator="@animator/press_3d" android:layout_marginStart="8dp">
+                                <ImageView android:layout_width="32dp" android:layout_height="32dp" android:padding="6dp" android:background="@drawable/bg_white_circle" android:src="@android:drawable/ic_menu_help" app:tint="@color/primary" />
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentBottom="true" android:layout_marginBottom="24dp" android:text="NEXT MILESTONE" android:textColor="@color/on_surface_variant" android:textSize="10sp" android:fontFamily="sans-serif-medium" />
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentBottom="true" android:text="Anomaly Scan" android:textColor="@color/on_surface" android:textSize="16sp" android:textStyle="bold" />
+                        </RelativeLayout>
+                        
+                    </GridLayout>
+
+                    <!-- Daily Advice Layer -->
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="32dp" android:text="Daily Advice" android:textColor="@color/on_surface" android:textSize="20sp" android:textStyle="bold" />
+                    
+                    <!-- Aesthetic Card -->
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="24dp">
+                        android:layout_marginTop="16dp"
+                        android:background="@drawable/bg_white_3d_pill"
+                        android:stateListAnimator="@animator/press_3d"
+                        android:padding="20dp">
                         
-                        <ImageView
-                            android:id="@+id/ivMenu"
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
-                            android:layout_alignParentStart="true"
-                            android:src="@android:drawable/ic_menu_sort_by_size"
-                            app:tint="#FFFFFF" />
-                        
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
-                            android:layout_centerVertical="true"
-                            android:orientation="horizontal">
-                            <View android:layout_width="4dp" android:layout_height="14dp" android:background="#FFFFFF" android:layout_marginEnd="4dp" />
-                            <View android:layout_width="4dp" android:layout_height="8dp" android:background="#FFFFFF" android:layout_marginEnd="4dp" />
-                            <View android:layout_width="4dp" android:layout_height="4dp" android:background="#FFFFFF" />
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                            <RelativeLayout android:layout_width="48dp" android:layout_height="48dp" android:background="@drawable/bg_white_circle">
+                                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:layout_centerInParent="true" android:src="@android:drawable/ic_dialog_info" app:tint="@color/primary" />
+                            </RelativeLayout>
+                            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:orientation="vertical">
+                                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Stay Hydrated!" android:textColor="@color/on_surface" android:textSize="16sp" android:textStyle="bold" />
+                                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="Increasing your water intake helps maintain amniotic fluid." android:textColor="@color/on_surface_variant" android:textSize="12sp" />
+                            </LinearLayout>
                         </LinearLayout>
                     </RelativeLayout>
-                    
-                    <LinearLayout
+
+                    <!-- Profile Warning -->
+                    <RelativeLayout
+                        android:id="@+id/cardProfileWarning"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical">
+                        android:layout_marginTop="24dp"
+                        android:background="@drawable/bg_white_3d_pill"
+                        android:stateListAnimator="@animator/press_3d"
+                        android:padding="20dp">
                         
-                        <androidx.cardview.widget.CardView
-                            android:layout_width="60dp"
-                            android:layout_height="60dp"
-                            app:cardCornerRadius="30dp"
-                            app:cardElevation="4dp"
-                            app:cardBackgroundColor="#FFFFFF">
-                            <ImageView
-                                android:id="@+id/ivDashboardLogo"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:padding="2dp"
-                                android:scaleType="centerCrop"
-                                android:src="@android:drawable/ic_menu_myplaces" />
-                        </androidx.cardview.widget.CardView>
-                        
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:layout_marginStart="16dp">
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                            <!-- Mocha Circle Icon -->
+                            <RelativeLayout android:layout_width="48dp" android:layout_height="48dp" android:background="@drawable/bg_mocha_circle">
+                                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:layout_centerInParent="true" android:src="@android:drawable/ic_dialog_alert" app:tint="@color/white" />
+                            </RelativeLayout>
                             
-                            <TextView
-                                android:id="@+id/tvDashboardTagline"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="YOUR HEALTH IN YOUR HANDS"
-                                android:textColor="#CCFFFFFF"
-                                android:textSize="10sp"
-                                android:textStyle="bold"
-                                android:textAllCaps="true" />
-                                
-                            <TextView
-                                android:id="@+id/tvDashboardTitle"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Loading App..."
-                                android:textColor="#FFFFFF"
-                                android:textSize="22sp"
-                                android:textStyle="bold"
-                                android:layout_marginTop="2dp" />
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:orientation="vertical">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Complete Your Profile" android:textColor="@color/on_surface" android:textStyle="bold" android:textSize="16sp" />
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Help us personalize your journey" android:textColor="@color/on_surface_variant" android:textSize="12sp" />
+                            </LinearLayout>
+                            <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_media_next" app:tint="@color/on_surface_variant" />
                         </LinearLayout>
-                    </LinearLayout>
+                    </RelativeLayout>
                 </LinearLayout>
-            </FrameLayout>
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="-24dp"
-                android:layout_marginHorizontal="24dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="4dp">
                 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="16dp"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
-                    
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        app:cardCornerRadius="12dp"
-                        app:cardBackgroundColor="#FFF3E0"
-                        app:cardElevation="0dp"
-                        android:layout_marginEnd="16dp">
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_gravity="center"
-                            android:src="@android:drawable/ic_menu_today"
-                            app:tint="#F97316" />
-                    </androidx.cardview.widget.CardView>
-                    
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Next Appt."
-                            android:textSize="14sp"
-                            android:textStyle="bold"
-                            android:textColor="#1E293B" />
-                        <TextView
-                            android:id="@+id/tvNextBooking"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="No upcoming visit"
-                            android:textSize="12sp"
-                            android:textColor="#64748B" />
-                    </LinearLayout>
-                    
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@android:drawable/ic_media_next"
-                        app:tint="#CBD5E1" />
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-            
-            <TextView
-                android:id="@+id/tvServicesLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Our Services"
-                android:textStyle="bold"
-                android:textSize="14sp"
-                android:textColor="#1E293B"
-                android:layout_marginHorizontal="24dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginBottom="8dp" />
-                
-            <LinearLayout
-                android:id="@+id/servicesContainer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginHorizontal="24dp">
-                
-                <androidx.cardview.widget.CardView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="8dp"
-                    app:cardCornerRadius="16dp"
-                    app:cardBackgroundColor="#EFF6FF"
-                    app:cardElevation="0dp">
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:padding="16dp">
-                        <ImageView
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:src="@android:drawable/ic_menu_agenda"
-                            app:tint="#3B82F6"
-                            android:layout_marginBottom="8dp" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Maternity"
-                            android:textSize="10sp"
-                            android:textStyle="bold"
-                            android:textColor="#334155" />
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
-
-                <androidx.cardview.widget.CardView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="8dp"
-                    app:cardCornerRadius="16dp"
-                    app:cardBackgroundColor="#FDF2F8"
-                    app:cardElevation="0dp">
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:padding="16dp">
-                        <ImageView
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:src="@android:drawable/ic_menu_gallery"
-                            app:tint="#EC4899"
-                            android:layout_marginBottom="8dp" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Pediatrics"
-                            android:textSize="10sp"
-                            android:textStyle="bold"
-                            android:textColor="#334155" />
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
+                <!-- Bottom Spacer for Nav Dock -->
+                <View android:layout_width="match_parent" android:layout_height="100dp" />
             </LinearLayout>
-            
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cvActionCard"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="24dp"
-                android:layout_marginTop="24dp"
-                app:cardCornerRadius="16dp"
-                app:cardBackgroundColor="#171717"
-                app:cardElevation="8dp">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:paddingTop="24dp"
-                    android:paddingBottom="24dp"
-                    android:paddingHorizontal="24dp">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Book a Checkup"
-                        android:textColor="#FFFFFF"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:layout_marginBottom="4dp" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Access your medical records and track your pregnancy."
-                        android:textColor="#CCFFFFFF"
-                        android:textSize="12sp"
-                        android:textAlignment="center"
-                        android:layout_marginBottom="16dp" />
-                    <Button
-                        android:id="@+id/btnSchedule"
-                        android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:text="Schedule Now"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:textColor="#171717"
-                        android:backgroundTint="#FFFFFF"
-                        app:cornerRadius="12dp" />
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
+        </ScrollView>
 
-            <!-- Hidden old fields used by MainActivity.java temporarily to not crash -->
-            <TextView android:id="@+id/tvUserFullname" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone" />
-            <TextView android:id="@+id/tvPendingBills" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone" />
-            <TextView android:id="@+id/tvRecordsCount" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone" />
-            <Button android:id="@+id/btnRefresh" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone" />
-            <Button android:id="@+id/btnLogout" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone" />
+        <!-- Premium Fixed Bottom Nav Dock -->
+        <!-- Reusable Bottom Nav -->
+        <include layout="@layout/layout_bottom_nav" />
 
-        </LinearLayout>
-    </ScrollView>
-    
-    <!-- Custom Bottom Navigation -->
-    <RelativeLayout
-        android:id="@+id/bottomNavContainer"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:layout_alignParentBottom="true">
+        <!-- Ghost anchors kept for Java compatibility -->
+        <View android:id="@+id/btnLogout" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone" />
+        <View android:id="@+id/navChat" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone" />
         
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="64dp"
-            android:layout_alignParentBottom="true"
-            android:background="#FFFFFF"
-            android:elevation="24dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:paddingHorizontal="24dp">
-            
-            <ImageView
-                android:id="@+id/navHome"
-                android:layout_width="0dp"
-                android:layout_height="28dp"
-                android:layout_weight="1"
-                android:src="@android:drawable/ic_menu_sort_by_size"
-                app:tint="#6366F1" />
-                
-            <ImageView
-                android:id="@+id/navAppointments"
-                android:layout_width="0dp"
-                android:layout_height="28dp"
-                android:layout_weight="1"
-                android:src="@android:drawable/ic_menu_today"
-                app:tint="#CBD5E1" />
-                
-            <View
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1" /> 
-                
-            <ImageView
-                android:id="@+id/navRecords"
-                android:layout_width="0dp"
-                android:layout_height="28dp"
-                android:layout_weight="1"
-                android:src="@android:drawable/ic_menu_recent_history"
-                app:tint="#CBD5E1" />
-                
-            <ImageView
-                android:id="@+id/navLogout"
-                android:layout_width="0dp"
-                android:layout_height="28dp"
-                android:layout_weight="1"
-                android:src="@android:drawable/ic_menu_info_details"
-                app:tint="#CBD5E1" />
-        </LinearLayout>
-        
-        <!-- Big Floating Add Button in the center over the nav bar -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/fabAction"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentTop="true"
-            app:cardCornerRadius="32dp"
-            app:cardBackgroundColor="#6366F1"
-            app:cardElevation="28dp">
-            <ImageView
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_gravity="center"
-                android:src="@android:drawable/ic_input_add"
-                app:tint="#FFFFFF" />
-        </androidx.cardview.widget.CardView>
     </RelativeLayout>
-</RelativeLayout>
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/navView"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:fitsSystemWindows="true"
+        app:headerLayout="@layout/nav_header"
+        app:menu="@menu/nav_menu" />
+
+</androidx.drawerlayout.widget.DrawerLayout>

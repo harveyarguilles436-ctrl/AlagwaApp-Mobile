@@ -34,6 +34,11 @@
         <activity
             android:name=".RecordsActivity"
             android:exported="false" />
+
+        <activity android:name=".BillingActivity" android:exported="false" />
+        <activity android:name=".ProfileActivity" android:exported="false" />
+        <activity android:name=".RatingsActivity" android:exported="false" />
+        <activity android:name=".ChatActivity" android:exported="false" />
     </application>
 
 </manifest>

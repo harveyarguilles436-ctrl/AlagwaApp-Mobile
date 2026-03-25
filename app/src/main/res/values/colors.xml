@@ -2,4 +2,23 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    
+    <!-- Pinterest Aesthetic Mocha / Latte Palette -->
+    <color name="primary">#A67C52</color>
+    <color name="primary_light">#D1B296</color>
+    <color name="primary_dark">#6B4423</color>
+    
+    <color name="secondary">#EAE1D8</color>
+    <color name="secondary_dark">#CDBFB5</color>
+    
+    <color name="background">#FDFBF7</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="surface_container">#F5F0EA</color> 
+    
+    <color name="on_surface">#4A3B32</color>
+    <color name="on_surface_variant">#8C7A6B</color>
+    <color name="outline_variant">#EAE1D8</color> 
+    
+    <color name="error">#D96C6C</color>
+    <color name="success">#85A88D</color>
 </resources>

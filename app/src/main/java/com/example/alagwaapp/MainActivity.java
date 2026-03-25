@@ -8,17 +8,19 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.webkit.CookieManager;
-import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.model.GlideUrl;
-import com.bumptech.glide.load.model.LazyHeaders;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+
+import com.google.android.material.navigation.NavigationView;
 import com.google.gson.GsonBuilder;
+
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import retrofit2.Call;
@@ -28,27 +30,26 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
-    private TextView tvNextBooking;
-    
-    // Dynamic Views
-    private FrameLayout headerFrame;
-    private ImageView ivDashboardLogo;
-    private TextView tvDashboardTagline;
-    private TextView tvDashboardTitle;
-    private ImageView navHome;
-    private CardView fabAction;
-    private CardView cvActionCard;
-    private Button btnSchedule;
-    private ImageView navLogout;
-    private ImageView navAppointments;
-    private ImageView navRecords;
-    private View mainRoot;
-    private View servicesContainer;
-    private TextView tvServicesLabel;
-    
-    private SharedPreferences prefs;
 
+    private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
+    private ImageView ivMenu;
+    private View btnLogout;
+    
+    // Header Stats
+    private TextView tvWelcomeName, tvPregnancyStatus, tvStatValue1, tvStatValue2, tvStatValue3;
+    private View viewTimelineProgress;
+    private View cardProfileWarning;
+    
+    // Bottom Navigation Icons
+    private View navHome, navAppointments, navRecords, navBilling, navProfile, navRatings, navChat;
+
+    private SharedPreferences prefs;
     private String userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36";
+    
+    private ApiService apiService;
+    private Retrofit retrofit;
+    private OkHttpClient sharedClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,41 +63,44 @@ public class MainActivity extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_main);
-
-        tvNextBooking = findViewById(R.id.tvNextBooking);
         
-        headerFrame = findViewById(R.id.headerFrame);
-        ivDashboardLogo = findViewById(R.id.ivDashboardLogo);
-        tvDashboardTagline = findViewById(R.id.tvDashboardTagline);
-        tvDashboardTitle = findViewById(R.id.tvDashboardTitle);
-        navHome = findViewById(R.id.navHome);
-        fabAction = findViewById(R.id.fabAction);
-        cvActionCard = findViewById(R.id.cvActionCard);
-        btnSchedule = findViewById(R.id.btnSchedule);
-        navLogout = findViewById(R.id.navLogout);
-        navAppointments = findViewById(R.id.navAppointments);
-        navRecords = findViewById(R.id.navRecords);
-        mainRoot = findViewById(R.id.mainRoot);
-        servicesContainer = findViewById(R.id.servicesContainer);
-        tvServicesLabel = findViewById(R.id.tvServicesLabel);
-
-        ImageView navAppointments = findViewById(R.id.navAppointments);
-        ImageView navRecords = findViewById(R.id.navRecords);
-
-        navLogout.setOnClickListener(v -> handleLogout());
+        // Pregnancy Tracker Views
+        tvWelcomeName = findViewById(R.id.tvWelcomeName);
+        tvPregnancyStatus = findViewById(R.id.tvPregnancyStatus);
+        tvStatValue1 = findViewById(R.id.tvStatValue1);
+        tvStatValue2 = findViewById(R.id.tvStatValue2);
+        tvStatValue3 = findViewById(R.id.tvStatValue3);
+        viewTimelineProgress = findViewById(R.id.viewTimelineProgress);
+        cardProfileWarning = findViewById(R.id.cardProfileWarning);
         
-        navHome.setOnClickListener(v -> Toast.makeText(this, "You are already home", Toast.LENGTH_SHORT).show());
-        navAppointments.setOnClickListener(v -> startActivity(new Intent(this, AppointmentsActivity.class)));
-        navRecords.setOnClickListener(v -> startActivity(new Intent(this, RecordsActivity.class)));
-        fabAction.setOnClickListener(v -> startActivity(new Intent(this, AppointmentsActivity.class)));
-        btnSchedule.setOnClickListener(v -> startActivity(new Intent(this, AppointmentsActivity.class)));
+        drawerLayout = findViewById(R.id.drawerLayout);
+        navigationView = findViewById(R.id.navView);
+        ivMenu = findViewById(R.id.ivMenu);
+        btnLogout = findViewById(R.id.btnLogout);
+        
+        // Reusable Navigation System
+        NavigationHelper.setupBottomNav(this);
+        
+        if (ivMenu != null) ivMenu.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.END));
+        if (btnLogout != null) btnLogout.setOnClickListener(v -> handleLogout());
 
+        initNetworking();
         fetchClinicBranding();
         fetchDashboardData();
+        setupNavigationDrawer();
     }
-    
-    private void fetchClinicBranding() {
-        OkHttpClient client = new OkHttpClient.Builder()
+
+    private void handleLogout() {
+        prefs.edit().clear().apply();
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
+
+    private void initNetworking() {
+        if (sharedClient == null) {
+            sharedClient = new OkHttpClient.Builder()
                 .addInterceptor(chain -> {
                     String cookies = CookieManager.getInstance().getCookie("http://alagawa.ct.ws/");
                     Request.Builder builder = chain.request().newBuilder()
@@ -114,118 +118,63 @@ public class MainActivity extends AppCompatActivity {
                             .addQueryParameter("tenant_id", String.valueOf(prefs.getInt("tenantId", 1)))
                             .addQueryParameter("role", prefs.getString("role", "patient"))
                             .addQueryParameter("user_id", String.valueOf(prefs.getInt("userId", 0)))
-                            .addQueryParameter("email", prefs.getString("email", ""))
-                            .addQueryParameter("fullname", prefs.getString("fullname", ""))
                             .build();
                             
                     builder.url(newUrl);
-                    
                     return chain.proceed(builder.build());
                 })
                 .build();
+        }
 
-        Retrofit retrofit = new Retrofit.Builder()
+        if (retrofit == null) {
+            retrofit = new Retrofit.Builder()
                 .baseUrl("http://alagawa.ct.ws/")
-                .client(client)
+                .client(sharedClient)
                 .addConverterFactory(GsonConverterFactory.create(new GsonBuilder().setLenient().create()))
                 .build();
+        }
 
-        ApiService apiService = retrofit.create(ApiService.class);
+        apiService = retrofit.create(ApiService.class);
+    }
+
+    private void setupNavigationDrawer() {
+        navigationView.setNavigationItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_chat) {
+                Intent chatIntent = new Intent(this, ChatActivity.class);
+                chatIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                startActivity(chatIntent);
+                overridePendingTransition(0, 0);
+            } else if (id == R.id.nav_logout) {
+                handleLogout();
+            }
+            drawerLayout.closeDrawer(GravityCompat.END);
+            return true;
+        });
+    }
+
+    private void fetchClinicBranding() {
         int tenantId = prefs.getInt("tenantId", 1);
         apiService.getClinicInfo("get_clinic_info", tenantId, "true").enqueue(new Callback<ClinicResponse>() {
             @Override
             public void onResponse(Call<ClinicResponse> call, Response<ClinicResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     ClinicResponse clinic = response.body();
-                    
-                    if (clinic.clinic_name != null && !clinic.clinic_name.equals("null") && !clinic.clinic_name.isEmpty()) {
-                        tvDashboardTitle.setText(clinic.clinic_name);
-                    } else {
-                        tvDashboardTitle.setText("Maternity Clinic");
-                    }
-
-                    if (clinic.tagline != null && !clinic.tagline.equals("null") && !clinic.tagline.isEmpty()) {
-                        tvDashboardTagline.setText(clinic.tagline);
-                    }
-                    
-                    if (clinic.primary_color != null && !clinic.primary_color.equals("null") && clinic.primary_color.startsWith("#")) {
+                    String primaryColor = clinic.primary_color;
+                    if (primaryColor != null && primaryColor.startsWith("#")) {
                         try {
-                            int parsedColor = Color.parseColor(clinic.primary_color);
-                            headerFrame.setBackgroundColor(parsedColor);
-                            navHome.setColorFilter(parsedColor);
-                            fabAction.setCardBackgroundColor(parsedColor);
-                            cvActionCard.setCardBackgroundColor(parsedColor);
-                            btnSchedule.setTextColor(parsedColor);
-                            
-                            // Adjust contrast for header text
-                            int headerTextCol = isColorDark(parsedColor) ? Color.WHITE : Color.parseColor("#1e293b");
-                            tvDashboardTitle.setTextColor(headerTextCol);
-                            tvDashboardTagline.setTextColor(headerTextCol);
-                            tvDashboardTagline.setAlpha(isColorDark(parsedColor) ? 0.8f : 0.6f);
+                            int parsedColor = Color.parseColor(primaryColor);
+                            viewTimelineProgress.setBackgroundTintList(ColorStateList.valueOf(parsedColor));
                         } catch (Exception e) {
-                            Log.e("AlagwaApp", "Primary color parse error: " + e.getMessage());
+                            Log.e("AlagwaApp", "Branding color error: " + e.getMessage());
                         }
                     }
 
-                    // Apply Background Theme
-                    if (clinic.bg_color != null && clinic.bg_color.startsWith("#")) {
-                        try {
-                            int bgColor = Color.parseColor(clinic.bg_color);
-                            mainRoot.setBackgroundColor(bgColor);
-                            
-                            // Adjust contrast for Root text
-                            int rootTextCol = isColorDark(bgColor) ? Color.WHITE : Color.parseColor("#1e293b");
-                            tvServicesLabel.setTextColor(rootTextCol);
-                            
-                        } catch (Exception e) {
-                            Log.e("AlagwaApp", "Bg color parse error: " + e.getMessage());
-                        }
+                    if (clinic.show_appointments != null && "false".equals(clinic.show_appointments)) {
+                        if (navAppointments != null) navAppointments.setVisibility(View.GONE);
                     }
-
-                    // Apply Feature Toggles
-                    if ("false".equals(clinic.show_appointments)) {
-                        navAppointments.setVisibility(View.GONE);
-                        fabAction.setVisibility(View.GONE);
-                    } else {
-                        navAppointments.setVisibility(View.VISIBLE);
-                        fabAction.setVisibility(View.VISIBLE);
-                    }
-
-                    if ("false".equals(clinic.show_records)) {
-                        navRecords.setVisibility(View.GONE);
-                    } else {
-                        navRecords.setVisibility(View.VISIBLE);
-                    }
-
-                    if ("false".equals(clinic.show_services)) {
-                        servicesContainer.setVisibility(View.GONE);
-                        tvServicesLabel.setVisibility(View.GONE);
-                    } else {
-                        servicesContainer.setVisibility(View.VISIBLE);
-                        tvServicesLabel.setVisibility(View.VISIBLE);
-                    }
-                    
-                    if (clinic.logo_url != null && !clinic.logo_url.isEmpty() && !clinic.logo_url.equals("null")) {
-                        try {
-                            String imgCookies = CookieManager.getInstance().getCookie("http://alagawa.ct.ws/");
-                            GlideUrl glideUrl = new GlideUrl(
-                                clinic.logo_url, 
-                                new LazyHeaders.Builder()
-                                    .addHeader("User-Agent", userAgent)
-                                    .addHeader("Cookie", imgCookies != null ? imgCookies : "")
-                                    .build()
-                            );
-                            
-                            Glide.with(MainActivity.this)
-                                 .load(glideUrl)
-                                 .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.NONE)
-                                 .skipMemoryCache(true)
-                                 .placeholder(android.R.drawable.ic_menu_myplaces)
-                                 .into(ivDashboardLogo);
-                            ivDashboardLogo.setPadding(0, 0, 0, 0);
-                        } catch (Exception e) {
-                            Log.e("AlagwaApp", "Glide error: " + e.getMessage());
-                        }
+                    if (clinic.show_records != null && "false".equals(clinic.show_records)) {
+                        if (navRecords != null) navRecords.setVisibility(View.GONE);
                     }
                 }
             }
@@ -239,46 +188,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void fetchDashboardData() {
         String email = prefs.getString("email", "");
-        if (email.isEmpty()) {
-            Toast.makeText(this, "Session error. Please logout and login again.", Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(chain -> {
-                    String cookies = CookieManager.getInstance().getCookie("http://alagawa.ct.ws/");
-                    Request.Builder builder = chain.request().newBuilder()
-                            .header("User-Agent", userAgent)
-                            .header("Accept", "application/json");
-                    if (cookies != null) builder.header("Cookie", cookies);
-
-                    String token = prefs.getString("token", "");
-                    if (!token.isEmpty()) {
-                        builder.header("Authorization", "Bearer " + token);
-                    }
-                    
-                    okhttp3.HttpUrl originalHttpUrl = chain.request().url();
-                    okhttp3.HttpUrl newUrl = originalHttpUrl.newBuilder()
-                            .addQueryParameter("tenant_id", String.valueOf(prefs.getInt("tenantId", 1)))
-                            .addQueryParameter("role", prefs.getString("role", "patient"))
-                            .addQueryParameter("user_id", String.valueOf(prefs.getInt("userId", 0)))
-                            .addQueryParameter("email", prefs.getString("email", ""))
-                            .addQueryParameter("fullname", prefs.getString("fullname", ""))
-                            .build();
-                            
-                    builder.url(newUrl);
-
-                    return chain.proceed(builder.build());
-                })
-                .build();
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://alagawa.ct.ws/")
-                .client(client)
-                .addConverterFactory(GsonConverterFactory.create(new GsonBuilder().setLenient().create()))
-                .build();
-
-        ApiService apiService = retrofit.create(ApiService.class);
+        if (email.isEmpty()) return;
 
         apiService.getSummary("summary", "true", email).enqueue(new Callback<SummaryResponse>() {
             @Override
@@ -286,32 +196,43 @@ public class MainActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     SummaryResponse.Data data = response.body().data;
                     if (data != null) {
-                        tvNextBooking.setText(data.next_booking != null ? data.next_booking : "No upcoming visit");
+                        // Persist patient_id for booking and records
+                        prefs.edit().putInt("patient_id", data.patient_id).apply();
+                        
+                        tvWelcomeName.setText(data.fullname != null ? data.fullname.toLowerCase() : "patient");
+                        tvStatValue1.setText(String.valueOf(data.today_queue));
+                        tvStatValue2.setText(String.valueOf(data.upcoming_appointments));
+                        tvStatValue3.setText(String.valueOf(data.records_count));
+                    
+                        SummaryResponse.PregnancyStats stats = data.pregnancy_stats;
+                        if(stats != null) {
+                            String statusText = "Week " + stats.weeks_pregnant + " / Month " + String.format("%.0f", stats.months);
+                            tvPregnancyStatus.setText(statusText);
+                            updateTimelineProgress(Math.min((float)stats.weeks_pregnant / 40f, 1.0f));
+                        }
+                    
+                        if(data.fullname == null || data.fullname.isEmpty()) {
+                            cardProfileWarning.setVisibility(View.VISIBLE);
+                        } else {
+                            cardProfileWarning.setVisibility(View.GONE);
+                        }
                     }
-                } else {
-                    Log.e("AlagwaApp", "Server returned error: " + response.code());
                 }
             }
 
             @Override
             public void onFailure(Call<SummaryResponse> call, Throwable t) {
                 Log.e("AlagwaApp", "Fetch error: " + t.getMessage());
-                Toast.makeText(MainActivity.this, "Network error. Try again later.", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void handleLogout() {
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.clear();
-        editor.apply();
-        
-        startActivity(new Intent(MainActivity.this, LoginActivity.class));
-        finish();
-    }
-
-    private boolean isColorDark(int color) {
-        double darkness = 1 - (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color)) / 255;
-        return darkness >= 0.5;
+    private void updateTimelineProgress(float progress) {
+        if (viewTimelineProgress == null) return;
+        viewTimelineProgress.post(() -> {
+            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) viewTimelineProgress.getLayoutParams();
+            params.weight = progress;
+            viewTimelineProgress.setLayoutParams(params);
+        });
     }
 }

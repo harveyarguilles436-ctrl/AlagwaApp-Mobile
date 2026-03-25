@@ -1,3 +1,23 @@
 <resources>
     <string name="app_name">AlagwaApp</string>
+
+    <string-array name="appointment_services">
+        <item>Prenatal Checkup</item>
+        <item>Laboratory</item>
+        <item>Ultrasound</item>
+        <item>Family Planning</item>
+        <item>Immunization</item>
+        <item>Other</item>
+    </string-array>
+
+    <string-array name="appointment_times">
+        <item>09:00</item>
+        <item>10:00</item>
+        <item>11:00</item>
+        <item>12:30</item>
+        <item>13:30</item>
+        <item>14:30</item>
+        <item>15:30</item>
+        <item>16:30</item>
+    </string-array>
 </resources>

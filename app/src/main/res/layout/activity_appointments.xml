@@ -3,105 +3,151 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8FAFC">
+    android:background="@color/background">
 
-    <!-- Header -->
-    <LinearLayout
+    <!-- Premium Curved Header (No Back Button as requested) -->
+    <RelativeLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="20dp"
-        android:gravity="center_vertical"
-        android:background="#FFFFFF"
-        android:elevation="2dp">
+        android:layout_height="140dp"
+        android:background="@drawable/bg_mocha_header">
         
-        <ImageView
-            android:id="@+id/btnBack"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:src="@android:drawable/ic_menu_revert"
-            app:tint="#1E293B"
-            android:padding="4dp" />
-            
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="My Appointments"
-            android:textColor="#1E293B"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:layout_marginStart="16dp" />
-    </LinearLayout>
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="32dp"
+            android:text="Appointments"
+            android:textColor="@color/white"
+            android:textSize="22sp"
+            android:fontFamily="sans-serif-black" />
 
-    <ScrollView
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="64dp"
+            android:text="Manage your clinic visits"
+            android:textColor="#E0FFFFFF"
+            android:textSize="12sp"
+            android:fontFamily="sans-serif-medium"
+            android:alpha="0.8" />
+    </RelativeLayout>
+
+    <!-- Content Sheet -->
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/header">
-        
+        android:layout_marginTop="-30dp"
+        android:layout_below="@id/header"
+        android:background="@drawable/bg_sheet_white"
+        android:padding="24dp">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="24dp">
-            
+            android:orientation="vertical">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Upcoming Visits"
-                android:textColor="#64748B"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textAllCaps="true"
+                android:text="Upcoming Schedule"
+                android:textColor="@color/on_surface"
+                android:textSize="18sp"
+                android:fontFamily="sans-serif-black"
                 android:layout_marginBottom="16dp" />
 
-            <!-- Empty State Placeholder (for now) -->
-            <androidx.cardview.widget.CardView
+            <!-- Empty State -->
+            <RelativeLayout
+                android:id="@+id/layoutEmpty"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:background="@drawable/bg_white_3d_pill"
+                android:padding="32dp"
+                android:visibility="gone">
+                
+                <ImageView
+                    android:id="@+id/imgEmpty"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:layout_centerHorizontal="true"
+                    android:src="@android:drawable/ic_menu_today"
+                    app:tint="@color/on_surface_variant"
+                    android:alpha="0.3" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/imgEmpty"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="16dp"
+                    android:text="No upcoming appointments"
+                    android:textColor="@color/on_surface_variant"
+                    android:textSize="14sp"
+                    android:fontFamily="sans-serif-medium" />
+            </RelativeLayout>
+
+            <!-- Appointments List -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvAppointments"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="0dp"
-                app:cardBackgroundColor="#F1F5F9">
+                android:nestedScrollingEnabled="false" />
+
+            <!-- New Booking Action -->
+            <RelativeLayout
+                android:id="@+id/cardNewBooking"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/bg_mocha_3d_pill"
+                android:padding="20dp"
+                android:stateListAnimator="@animator/press_3d">
+                
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:padding="40dp">
+                    android:orientation="horizontal"
+                    android:gravity="center">
+                    
                     <ImageView
-                        android:layout_width="64dp"
-                        android:layout_height="64dp"
-                        android:src="@android:drawable/ic_menu_today"
-                        app:tint="#CBD5E1"
-                        android:layout_marginBottom="16dp" />
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@android:drawable/ic_input_add"
+                        app:tint="@color/white" />
+                        
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="No Appointments Yet"
-                        android:textColor="#1E293B"
+                        android:layout_marginStart="12dp"
+                        android:text="Schedule a New Visit"
+                        android:textColor="@color/white"
                         android:textSize="16sp"
-                        android:textStyle="bold" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Your scheduled visits will appear here."
-                        android:textColor="#64748B"
-                        android:textSize="13sp"
-                        android:textAlignment="center"
-                        android:layout_marginTop="4dp" />
+                        android:fontFamily="sans-serif-black" />
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
+            </RelativeLayout>
 
-            <Button
-                android:id="@+id/btnBookNew"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginTop="32dp"
-                android:text="Book New Appointment"
-                android:backgroundTint="#6366F1"
-                android:textStyle="bold"
-                app:cornerRadius="12dp" />
+            <!-- Spacing for Bottom Nav -->
+            <View android:layout_width="match_parent" android:layout_height="100dp" />
 
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Reusable Bottom Nav -->
+    <include layout="@layout/layout_bottom_nav" />
+
+    <!-- Loading Overlay -->
+    <RelativeLayout
+        android:id="@+id/layoutLoading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80FFFFFF"
+        android:visibility="gone">
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:indeterminateTint="@color/primary" />
+    </RelativeLayout>
+
 </RelativeLayout>
